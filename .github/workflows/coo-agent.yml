@@ -1,0 +1,34 @@
+name: COO Agent
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'   # Every Monday at 08:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch data
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          bash .github/scripts/fetch-data.sh
+
+      - name: Run COO Agent
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GH_PAT }}
+          max_turns: 30
+          allowed_tools: "Read,Bash(git:gh)"
+          prompt: |
+            Read CLAUDE.md and follow it completely.

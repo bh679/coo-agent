@@ -1,0 +1,22 @@
+[
+  {
+    "repo": "bh679/chess-project",
+    "description": "Chess game platform orchestrator"
+  },
+  {
+    "repo": "bh679/Claude-Management-Dashboard",
+    "description": "Claude Management Dashboard (formerly AutoClaude)"
+  },
+  {
+    "repo": "bh679/house-sitting-agent",
+    "description": "Autonomous house-sitting listing monitor and applicant"
+  },
+  {
+    "repo": "bh679/weekly-blog",
+    "description": "Weekly development blog writer"
+  },
+  {
+    "repo": "bh679/Claude-Max-Usage-Analytics",
+    "description": "Claude Max Usage Analytics — personal usage dashboard"
+  }
+]
