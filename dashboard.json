@@ -1,0 +1,19 @@
+{
+  "generated_at": null,
+  "report_date": null,
+  "period": {
+    "start": null,
+    "end": null
+  },
+  "summary": {
+    "total_projects": 0,
+    "needs_decision": 0,
+    "at_risk": 0,
+    "moving_well": 0,
+    "total_open_prs": 0,
+    "total_open_issues": 0,
+    "total_commits_7d": 0,
+    "total_merged_prs_7d": 0
+  },
+  "projects": []
+}

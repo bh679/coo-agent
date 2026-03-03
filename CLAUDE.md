@@ -33,7 +33,99 @@ Additionally:
 - For each item in the 🔴 section, open a GitHub issue in **this repo** (bh679/coo-agent) titled `[Decision Needed] <summary>` with enough context for Brennan to act on it.
 - If there are no 🔴 items, do not open any issues.
 
-After producing output, update `state.json` with the current run timestamp and any snapshot data needed for deduplication next run.
+### Dashboard Data
+
+After producing the markdown report, also generate `dashboard.json` at the repo root. This file provides structured, machine-readable project data for the Claude Management Dashboard. **Overwrite** any existing `dashboard.json` on every run.
+
+The JSON must conform to this schema exactly:
+
+```json
+{
+  "generated_at": "<ISO 8601 timestamp>",
+  "report_date": "YYYY-MM-DD",
+  "period": {
+    "start": "YYYY-MM-DD",
+    "end": "YYYY-MM-DD"
+  },
+  "summary": {
+    "total_projects": 0,
+    "needs_decision": 0,
+    "at_risk": 0,
+    "moving_well": 0,
+    "total_open_prs": 0,
+    "total_open_issues": 0,
+    "total_commits_7d": 0,
+    "total_merged_prs_7d": 0
+  },
+  "projects": []
+}
+```
+
+Each entry in `projects` must include:
+
+```json
+{
+  "repo": "owner/name",
+  "name": "short-name",
+  "description": "from consumers.json",
+  "status": "needs_decision | at_risk | moving_well",
+  "status_label": "Needs Decision | At Risk / Stalled | Moving Well",
+  "status_emoji": "🔴 | 🟡 | 🟢",
+  "metrics": {
+    "open_prs": 0,
+    "open_issues": 0,
+    "commits_7d": 0,
+    "merged_prs_7d": 0,
+    "last_commit": "<ISO 8601 timestamp or null>",
+    "days_since_last_commit": 0
+  },
+  "blockages": [],
+  "risks": [],
+  "recent_updates": []
+}
+```
+
+**`blockages`** — items from the 🔴 Needs Decision section:
+```json
+{
+  "type": "blocked_pr | architectural_decision | priority_conflict | other",
+  "summary": "What needs decision",
+  "url": "https://github.com/...",
+  "issue_url": "https://github.com/bh679/coo-agent/issues/N"
+}
+```
+
+**`risks`** — items from the 🟡 At Risk / Stalled section:
+```json
+{
+  "type": "low_activity | dormant | stale_pr | overdue_milestone | stale_branch | ci_failure",
+  "summary": "Brief description of the risk",
+  "severity": "low | medium | high",
+  "since": "<ISO 8601 timestamp>",
+  "url": "https://github.com/... (optional)"
+}
+```
+
+**`recent_updates`** — notable positive activity from the 🟢 Moving Well section:
+```json
+{
+  "type": "commit | pr_merged | issue_closed | milestone_progress",
+  "date": "<ISO 8601 timestamp>",
+  "summary": "Brief description",
+  "url": "https://github.com/... (optional)"
+}
+```
+
+**Rules:**
+- Every project in `consumers.json` must appear in `projects`, even if it has no activity.
+- Status categorisation in `dashboard.json` must match the markdown report exactly — same project, same category.
+- The `summary` counts must be consistent with the `projects` array (e.g., `needs_decision` = count of projects with `status: "needs_decision"`).
+- Validate the JSON is parseable before committing: `python3 -c "import json; json.load(open('dashboard.json'))"`.
+- Commit `dashboard.json` alongside the report and `state.json` in the same commit.
+
+---
+
+After producing all output, update `state.json` with the current run timestamp and any snapshot data needed for deduplication next run.
 
 Commit everything in one commit and push:
 

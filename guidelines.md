@@ -45,6 +45,10 @@
 - Issues labelled `wontfix`, `duplicate`, or `backlog` with no recent activity.
 - Internal bot commits (state.json updates, CI config changes).
 
+## Dashboard JSON Consistency
+
+When generating `dashboard.json`, ensure the status categorisation for each project matches the markdown report exactly. If a project appears in the 🟡 section of the report, its `status` in the JSON must be `"at_risk"`. The `blockages`, `risks`, and `recent_updates` arrays should reflect the same items described in the report sections.
+
 ## Output Naming
 
 Save reports as `reports/YYYY-MM-DD.md` using the date the report was generated.
