@@ -4,8 +4,24 @@
     "description": "Chess game platform orchestrator"
   },
   {
+    "repo": "bh679/chess-client",
+    "description": "Node.js chess frontend application",
+    "parent": "bh679/chess-project"
+  },
+  {
+    "repo": "bh679/chess-api",
+    "description": "REST API for chess game storage (Express + SQLite)",
+    "parent": "bh679/chess-project"
+  },
+  {
     "repo": "bh679/Claude-Management-Dashboard",
-    "description": "Claude Management Dashboard (formerly AutoClaude)"
+    "description": "Claude Management Dashboard — Product Engineer project"
+  },
+  {
+    "repo": "bh679/Claude-Max-Usage-Analytics",
+    "description": "Claude Max plan usage tracking with Playwright and OpenTelemetry",
+    "parent": "bh679/Claude-Management-Dashboard",
+    "standalone": true
   },
   {
     "repo": "bh679/house-sitting-agent",
@@ -13,10 +29,22 @@
   },
   {
     "repo": "bh679/weekly-blog",
-    "description": "Weekly development blog writer"
+    "description": "Weekly development blog — AI-generated summaries"
   },
   {
-    "repo": "bh679/Claude-Max-Usage-Analytics",
-    "description": "Claude Max Usage Analytics — personal usage dashboard"
+    "repo": "bh679/ideas",
+    "description": "Idea capture and EPA routing system"
+  },
+  {
+    "repo": "bh679/claude-templates",
+    "description": "Workflow standards, project templates, and Claude skills"
+  },
+  {
+    "repo": "bh679/sentinel-agent",
+    "description": "Claude Code session monitor and project grouper"
+  },
+  {
+    "repo": "bh679/coo-agent",
+    "description": "COO Agent — cross-project momentum tracker and decision escalation"
   }
 ]

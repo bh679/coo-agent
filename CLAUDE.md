@@ -16,6 +16,15 @@ Before you run, the workflow has executed `.github/scripts/fetch-data.sh` and sa
 - `/tmp/coo-agent-data.json` — aggregated project status across all monitored repos (open PRs, stale issues, stalled branches, overdue milestones, recent activity)
 - `consumers.json` — the list of repos to monitor (source of truth for the portfolio)
 
+### consumers.json Schema
+
+Each entry has `repo` and `description`. Optional fields:
+
+- `parent` — this repo is a sub-repo of the named parent (e.g. `"parent": "bh679/chess-project"`). Sub-repos are grouped under their parent project in the report.
+- `standalone` — when `true` on a sub-repo, it is also reported independently in addition to being grouped. When absent or `false`, the sub-repo only appears within its parent's section.
+
+Repos with no `parent` are top-level projects.
+
 Read `guidelines.md` before producing any output. It governs tone, format, and quality.
 
 ---
@@ -27,7 +36,7 @@ Produce a structured markdown report saved to `reports/YYYY-MM-DD.md` (using tod
 1. **🔴 Needs Decision** — items requiring Brennan's immediate input (blocked PRs, architectural choices, priority conflicts)
 2. **🟡 At Risk / Stalled** — projects or items that have gone quiet, stale PRs, overdue milestones, branches with no activity
 3. **🟢 Moving Well** — projects with healthy recent activity, merged PRs, forward momentum
-4. **📋 Full Project Status** — one sub-section per monitored repo with key metrics (open PRs, open issues, last commit date, milestone progress)
+4. **📋 Full Project Status** — one sub-section per top-level project with key metrics (open PRs, open issues, last commit date, milestone progress). Group sub-repos (those with a `parent` field) under their parent project's section. Repos with `"standalone": true` also get their own top-level section in addition to appearing under their parent.
 
 Additionally:
 - For each item in the 🔴 section, open a GitHub issue in **this repo** (bh679/coo-agent) titled `[Decision Needed] <summary>` with enough context for Brennan to act on it.
