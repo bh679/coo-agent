@@ -50,6 +50,7 @@ The JSON must conform to this schema exactly:
 
 ```json
 {
+  "schemaVersion": "1.0",
   "generated_at": "<ISO 8601 timestamp>",
   "report_date": "YYYY-MM-DD",
   "period": {
