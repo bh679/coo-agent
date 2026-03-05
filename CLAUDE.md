@@ -15,6 +15,7 @@ Before you run, the workflow has executed `.github/scripts/fetch-data.sh` and sa
 
 - `/tmp/coo-agent-data.json` — aggregated project status across all monitored repos (open PRs, stale issues, stalled branches, overdue milestones, recent activity)
 - `consumers.json` — the list of repos to monitor (source of truth for the portfolio)
+- `pending-repos.json` — repos discovered but not yet approved/rejected
 
 ### consumers.json Schema
 
@@ -36,7 +37,8 @@ Produce a structured markdown report saved to `reports/YYYY-MM-DD.md` (using tod
 1. **🔴 Needs Decision** — items requiring Brennan's immediate input (blocked PRs, architectural choices, priority conflicts)
 2. **🟡 At Risk / Stalled** — projects or items that have gone quiet, stale PRs, overdue milestones, branches with no activity
 3. **🟢 Moving Well** — projects with healthy recent activity, merged PRs, forward momentum
-4. **📋 Full Project Status** — one sub-section per top-level project with key metrics (open PRs, open issues, last commit date, milestone progress). Group sub-repos (those with a `parent` field) under their parent project's section. Repos with `"standalone": true` also get their own top-level section in addition to appearing under their parent.
+4. **📥 New Repos Pending Review** — repos discovered by webhook but not yet approved/rejected (only include if `pending-repos.json` has entries with `status: "pending"`)
+5. **📋 Full Project Status** — one sub-section per top-level project with key metrics (open PRs, open issues, last commit date, milestone progress). Group sub-repos (those with a `parent` field) under their parent project's section. Repos with `"standalone": true` also get their own top-level section in addition to appearing under their parent.
 
 Additionally:
 - For each item in the 🔴 section, open a GitHub issue in **this repo** (bh679/coo-agent) titled `[Decision Needed] <summary>` with enough context for Brennan to act on it.
@@ -132,6 +134,26 @@ Each entry in `projects` must include:
 - The `summary` counts must be consistent with the `projects` array (e.g., `needs_decision` = count of projects with `status: "needs_decision"`).
 - Validate the JSON is parseable before committing: `python3 -c "import json; json.load(open('dashboard.json'))"`.
 - Commit `dashboard.json` alongside the report and `state.json` in the same commit.
+
+### Pending Repos Pipeline
+
+At the start of each run, read `pending-repos.json` (if it exists). Process entries by status:
+
+1. **Approved repos** (`status: "approved"`):
+   - Add to `consumers.json` (preserving `parent` and `standalone` fields if set by the Dashboard)
+   - Remove the entry from `pending-repos.json`
+
+2. **Rejected repos** (`status: "rejected"`):
+   - Keep in `pending-repos.json` — this prevents the webhook from re-discovering them
+
+3. **Pending repos** (`status: "pending"`):
+   - Include in the weekly report under the **📥 New Repos Pending Review** section
+   - List each pending repo with its name, description, and discovered date
+   - Write the full `pending-repos.json` contents into `dashboard.json` under a top-level `pending_repos` key (array of objects with same schema as the file)
+
+If `pending-repos.json` does not exist or is empty, skip this pipeline and omit the 📥 section from the report.
+
+Commit `pending-repos.json` alongside other output if it was modified (approved entries removed).
 
 ---
 

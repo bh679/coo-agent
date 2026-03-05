@@ -1,0 +1,81 @@
+name: Discover New Repos
+
+on:
+  repository_dispatch:
+    types: [new-repo-detected]
+  workflow_dispatch:
+    inputs:
+      repo:
+        description: 'Repo to add (owner/name)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Add pending repo
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # Get repo from dispatch payload or manual input
+          REPO="${{ github.event.client_payload.repo || github.event.inputs.repo }}"
+
+          if [ -z "$REPO" ]; then
+            echo "No repo specified, exiting."
+            exit 0
+          fi
+
+          echo "Checking repo: $REPO"
+
+          # Check if already tracked in consumers.json
+          if jq -e --arg r "$REPO" '.[] | select(.repo == $r)' consumers.json > /dev/null 2>&1; then
+            echo "$REPO is already tracked in consumers.json, skipping."
+            exit 0
+          fi
+
+          # Check if already in pending-repos.json
+          if [ -f pending-repos.json ] && jq -e --arg r "$REPO" '.[] | select(.repo == $r)' pending-repos.json > /dev/null 2>&1; then
+            echo "$REPO is already in pending-repos.json, skipping."
+            exit 0
+          fi
+
+          # Fetch repo description from GitHub API
+          DESCRIPTION=$(gh api "repos/$REPO" --jq '.description // empty' 2>/dev/null || echo "")
+          LAST_COMMIT=$(gh api "repos/$REPO" --jq '.pushed_at // empty' 2>/dev/null || echo "")
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          # Initialize pending-repos.json if it doesn't exist
+          if [ ! -f pending-repos.json ]; then
+            echo "[]" > pending-repos.json
+          fi
+
+          # Add new entry
+          jq --arg repo "$REPO" \
+             --arg desc "$DESCRIPTION" \
+             --arg discovered "$TIMESTAMP" \
+             --arg last_commit "$LAST_COMMIT" \
+             '. += [{
+               "repo": $repo,
+               "description": $desc,
+               "discovered_at": $discovered,
+               "last_commit": $last_commit,
+               "status": "pending"
+             }]' pending-repos.json > tmp.json && mv tmp.json pending-repos.json
+
+          echo "Added $REPO to pending-repos.json"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add pending-repos.json
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "chore: add ${{ github.event.client_payload.repo || github.event.inputs.repo }} to pending repos"
+          git push
