@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "repo": "bh679/AutoClaude",
+    "description": "Overnight Claude Code task runner with credit monitoring and web dashboard",
+    "rejected_at": "2026-03-05T10:16:21.631Z",
+    "reason": "Obsolete",
+    "replacedBy": "bh679/Claude-Management-Dashboard"
+  }
+]

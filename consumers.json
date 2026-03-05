@@ -46,5 +46,9 @@
   {
     "repo": "bh679/coo-agent",
     "description": "COO Agent — cross-project momentum tracker and decision escalation"
+  },
+  {
+    "repo": "bh679/JudgeGPT",
+    "description": "JudgeGPT game server"
   }
 ]
