@@ -46,6 +46,12 @@ jobs:
             exit 0
           fi
 
+          # Check if previously rejected (in untracked-repos.json)
+          if [ -f untracked-repos.json ] && jq -e --arg r "$REPO" '.[] | select(.repo == $r)' untracked-repos.json > /dev/null 2>&1; then
+            echo "$REPO is in untracked-repos.json (previously rejected), skipping."
+            exit 0
+          fi
+
           # Fetch repo description from GitHub API
           DESCRIPTION=$(gh api "repos/$REPO" --jq '.description // empty' 2>/dev/null || echo "")
           LAST_COMMIT=$(gh api "repos/$REPO" --jq '.pushed_at // empty' 2>/dev/null || echo "")
