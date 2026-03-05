@@ -77,6 +77,8 @@ Each entry in `projects` must include:
   "repo": "owner/name",
   "name": "short-name",
   "description": "from consumers.json",
+  "parent": "owner/parent-name or null",
+  "standalone": true,
   "status": "needs_decision | at_risk | moving_well",
   "status_label": "Needs Decision | At Risk / Stalled | Moving Well",
   "status_emoji": "🔴 | 🟡 | 🟢",
@@ -93,6 +95,10 @@ Each entry in `projects` must include:
   "recent_updates": []
 }
 ```
+
+**`parent`** — copied from the corresponding `consumers.json` entry. Set to `null` (or omit) for top-level projects.
+
+**`standalone`** — copied from `consumers.json`. When `true`, this sub-repo is also reported independently. Omit or set to `false` when not applicable.
 
 **`blockages`** — items from the 🔴 Needs Decision section:
 ```json
