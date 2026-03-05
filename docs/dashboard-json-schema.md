@@ -34,6 +34,7 @@ const dashboard = JSON.parse(Buffer.from(fileData.content, 'base64').toString('u
 | `period.end` | string (YYYY-MM-DD) | End of the monitoring window (= report_date) |
 | `summary` | object | Aggregate counts across all projects |
 | `projects` | array | Per-project structured data |
+| `pending_repos` | array | Repos discovered but not yet approved/rejected (from `pending-repos.json`) |
 
 ## Summary Object
 
@@ -125,6 +126,26 @@ Notable positive activity from the 🟢 Moving Well assessment. Empty array if n
 | `date` | string (ISO 8601) | When the activity occurred |
 | `summary` | string | Brief description |
 | `url` | string (optional) | Link to the commit/PR/issue on GitHub |
+
+## Pending Repos Array
+
+Repos discovered by the webhook but not yet approved or rejected. Top-level key alongside `projects`. Omitted or empty array if no pending repos exist.
+
+| Field | Type | Description |
+|---|---|---|
+| `repo` | string | Full `owner/name` identifier |
+| `description` | string | Repo description from GitHub |
+| `discovered_at` | string (ISO 8601) | When the repo was first detected |
+| `last_commit` | string (ISO 8601) | Last push timestamp at discovery time |
+| `status` | enum | `"pending"`, `"approved"`, or `"rejected"` |
+
+When approved from the Dashboard, entries may also include:
+
+| Field | Type | Description |
+|---|---|---|
+| `decided_at` | string (ISO 8601) | When the approval/rejection occurred |
+| `parent` | string (optional) | Parent project `owner/name` for grouping |
+| `standalone` | boolean (optional) | Whether to also report independently |
 
 ## Example
 
