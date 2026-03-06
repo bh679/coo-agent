@@ -50,5 +50,9 @@
   {
     "repo": "bh679/JudgeGPT",
     "description": "JudgeGPT game server"
+  },
+  {
+    "repo": "bh679/other-sub-agents",
+    "description": "Claude Code skill that delegates development sub-tasks to local (Ollama) and cloud (Gemini) LLMs"
   }
 ]
