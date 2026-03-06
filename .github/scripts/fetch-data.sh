@@ -90,6 +90,10 @@ while IFS= read -r repo; do
   echo "  Checking CI status..."
   DEFAULT_BRANCH=$(gh api "repos/$repo" --jq '.default_branch' 2>/dev/null || echo "main")
   CI_STATUS=$(gh api "repos/$repo/commits/$DEFAULT_BRANCH/check-runs?per_page=5" --jq '{total: .total_count, latest: [.check_runs[:5][] | {name: .name, status: .status, conclusion: .conclusion}]}' 2>/dev/null || echo '{"total": 0, "latest": []}')
+  # Validate CI_STATUS is valid JSON; fallback if garbled
+  if ! echo "$CI_STATUS" | jq empty 2>/dev/null; then
+    CI_STATUS='{"total": 0, "latest": []}'
+  fi
   echo "  CI checks: $(echo "$CI_STATUS" | jq '.total')"
 
   # Compose repo entry
