@@ -60,6 +60,8 @@ Each entry in the `projects` array represents one monitored repository.
 | `repo` | string | Full `owner/name` identifier (e.g., `"bh679/chess-project"`) |
 | `name` | string | Short repo name for display |
 | `description` | string | From `consumers.json` |
+| `parent` | string or null | Parent project `owner/name` from `consumers.json`. `null` or absent for top-level projects |
+| `standalone` | boolean | From `consumers.json`. When `true`, sub-repo is also reported independently. Absent or `false` otherwise |
 | `status` | enum | `"needs_decision"`, `"at_risk"`, or `"moving_well"` |
 | `status_label` | string | Human-readable: `"Needs Decision"`, `"At Risk / Stalled"`, `"Moving Well"` |
 | `status_emoji` | string | `"🔴"`, `"🟡"`, or `"🟢"` |
@@ -172,6 +174,8 @@ When approved from the Dashboard, entries may also include:
       "repo": "bh679/Claude-Max-Usage-Analytics",
       "name": "Claude-Max-Usage-Analytics",
       "description": "Claude Max Usage Analytics — personal usage dashboard",
+      "parent": "bh679/Claude-Management-Dashboard",
+      "standalone": true,
       "status": "moving_well",
       "status_label": "Moving Well",
       "status_emoji": "🟢",
