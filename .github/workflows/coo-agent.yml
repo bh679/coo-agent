@@ -35,6 +35,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           claude_args: |
             --max-turns 30
-            --allowedTools Read,Bash(git),Bash(gh),WebFetch
+            --allowedTools Read,Bash,WebFetch
           prompt: |
             Read CLAUDE.md and follow it completely.
