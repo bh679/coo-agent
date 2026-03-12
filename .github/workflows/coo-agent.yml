@@ -36,5 +36,6 @@ jobs:
           claude_args: |
             --max-turns 30
             --allowedTools Read,Bash,WebFetch
+            --setting-sources project,local
           prompt: |
             Read CLAUDE.md and follow it completely.
