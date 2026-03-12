@@ -28,14 +28,37 @@ jobs:
         run: |
           bash .github/scripts/fetch-data.sh
 
+      - name: Diagnostics (pre-run)
+        run: |
+          echo "=== Claude settings files ==="
+          ls -la ~/.claude/ 2>/dev/null || echo "(no ~/.claude dir)"
+          cat ~/.claude/settings.json 2>/dev/null || echo "(no settings.json)"
+          echo "=== Project .claude dir ==="
+          ls -la .claude/ 2>/dev/null || echo "(no .claude dir)"
+          echo "=== Claude binary ==="
+          which claude 2>/dev/null || echo "(claude not yet installed)"
+          echo "=== Environment ==="
+          echo "HOME=$HOME"
+          echo "PWD=$PWD"
+
       - name: Run COO Agent
         uses: anthropics/claude-code-action@v1.0.69
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          show_full_output: true
           claude_args: |
             --max-turns 30
             --allowedTools Read,Bash,WebFetch
             --setting-sources project,local
           prompt: |
             Read CLAUDE.md and follow it completely.
+
+      - name: Diagnostics (post-run)
+        if: always()
+        run: |
+          echo "=== Claude settings after run ==="
+          cat ~/.claude/settings.json 2>/dev/null || echo "(no settings.json)"
+          echo "=== Claude debug logs ==="
+          ls ~/.claude/debug/ 2>/dev/null || echo "(no debug dir)"
+          tail -n 50 ~/.claude/debug/latest 2>/dev/null || echo "(no debug log)"
